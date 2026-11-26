@@ -7,7 +7,7 @@ Standard library only. Definitions follow the paper (Sec. V):
     probe        k = 10 gradient steps on the frozen restorer
     displacement disp = |mean(k) - mean(0)|          (mean = output brightness)
     headroom     g    = |E_used - mean(k)|           (distance left to the dose)
-    score        s    = disp / max(g, G_MIN),  G_MIN = 0.02
+    score        s    = disp / max(g, G_MIN),  G_MIN = 1e-4
     harm         y    = 1  iff  psnr(k_full) < -0.1 dB   (dose at the last step)
     verdict      accept iff s <= tau(alpha),  tau calibrated on LOLv2 (add-one rule)
 
@@ -19,7 +19,7 @@ import csv
 import os
 import sys
 
-G_MIN = 0.02
+G_MIN = 1e-4
 PROBE = 10
 HARM_DB = -0.1
 ALPHAS = (0.10, 0.20, 0.30)

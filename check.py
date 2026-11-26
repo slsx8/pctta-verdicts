@@ -76,13 +76,25 @@ def main():
             if seq != sorted(seq):
                 fails.append("%s/%s: coverage not monotone %s" % (dom, arm, seq))
 
-    # the Sec. V operating point
+    # the operating points quoted in Table III, cross-domain block
+    expect = {
+        ("lolv1", 0.10): [("accepted", "67"), ("n", "200"), ("coverage_pct", "33.5"),
+                          ("harm_pct", "0.0"), ("gain_mean_db", "+0.823")],
+        ("lolv1", 0.20): [("accepted", "117"), ("coverage_pct", "58.5"),
+                          ("harm_pct", "0.9"), ("gain_mean_db", "+1.700")],
+        ("lolv1", 0.30): [("accepted", "165"), ("coverage_pct", "82.5"),
+                          ("harm_pct", "3.6"), ("gain_mean_db", "+2.446")],
+        ("lsrw", 0.20): [("accepted", "24"), ("coverage_pct", "48.0"),
+                         ("harm_pct", "12.5"), ("gain_mean_db", "+1.060")],
+    }
+    row = None
+    for (dom, alpha), checks in expect.items():
+        row = next(r for r in op
+                   if r["domain"] == dom and r["arm"] == "dose" and float(r["alpha"]) == alpha)
+        for field, want in checks:
+            if row[field] != want:
+                fails.append("%s a=%.2f %s: %s vs %s" % (dom, alpha, field, row[field], want))
     row = next(r for r in op if r["domain"] == "lolv1" and r["arm"] == "dose" and float(r["alpha"]) == 0.10)
-    checks = [("accepted", "67"), ("n", "200"), ("coverage_pct", "33.5"),
-              ("harm_pct", "0.0"), ("gain_mean_db", "+0.823")]
-    for field, want in checks:
-        if row[field] != want:
-            fails.append("operating point %s: %s vs %s" % (field, row[field], want))
 
     if fails:
         print("FAIL (%d)" % len(fails))

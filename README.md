@@ -32,7 +32,7 @@ relative to step 0; `dpsnr` is the PSNR change relative to the static output.
 probe          k = 10 gradient steps on the frozen restorer
 displacement   disp = |dmean at step k|
 headroom       g    = |E_used - mean at step k|
-score          s    = disp / max(g, 0.02)
+score          s    = disp / max(g, 1e-4)
 harm           y    = 1  iff  dpsnr at the last step < -0.1 dB
 verdict        accept  iff  s <= tau(alpha)
 tau(alpha)     calibrated on the 100 LOLv2 images, conformal add-one rule:
@@ -56,22 +56,25 @@ Sec. V (LOLv1, dose arm, alpha = 0.10): **67 of 200 accepted, 33.5% coverage, 0.
 
 ## Numbers this package produces
 
-`alpha` = 0.10 / 0.20 / 0.30; `tau` = 0.0403 / 0.0641 / 0.1503.
+`alpha` = 0.10 / 0.20 / 0.30; `tau` = 0.0403 / 0.0699 / 0.1503.
 
 | domain | arm | accepted | coverage | harm | mean gain (dB) |
 |---|---|---|---|---|---|
-| LOLv1 | dose | 67 / 109 / 167 | 33.5 / 54.5 / 83.5% | 0.0 / 1.8 / 4.8% | +0.823 / +1.538 / +2.444 |
-| LOLv1 | static | 81 / 111 / 161 | 40.5 / 55.5 / 80.5% | 0.0 / 0.0 / 0.6% | +0.380 / +0.746 / +1.355 |
-| LSRW | dose | 14 / 27 / 43 | 28.0 / 54.0 / 86.0% | 0.0 / 14.8 / 18.6% | +0.693 / +1.021 / +1.447 |
-| LSRW | static | 27 / 34 / 47 | 54.0 / 68.0 / 94.0% | 0.0 / 0.0 / 6.4% | +0.357 / +0.602 / +1.029 |
-| LOLv2 | dose | 32 / 61 / 87 | 32.0 / 61.0 / 87.0% | 6.2 / 18.0 / 28.7% | +0.790 / +1.353 / +0.727 |
-| LOLv2 | static | 35 / 49 / 86 | 35.0 / 49.0 / 86.0% | 0.0 / 6.1 / 15.1% | +0.415 / +0.668 / +1.202 |
+| LOLv1 | dose | 67 / 117 / 165 | 33.5 / 58.5 / 82.5% | 0.0 / 0.9 / 3.6% | +0.823 / +1.700 / +2.446 |
+| LOLv1 | static | 70 / 110 / 159 | 35.0 / 55.0 / 79.5% | 0.0 / 0.0 / 0.6% | +0.376 / +0.804 / +1.351 |
+| LSRW | dose | 12 / 24 / 40 | 24.0 / 48.0 / 80.0% | 0.0 / 12.5 / 20.0% | +0.692 / +1.060 / +1.443 |
+| LSRW | static | 24 / 33 / 44 | 48.0 / 66.0 / 88.0% | 0.0 / 0.0 / 6.8% | +0.353 / +0.762 / +1.017 |
+| LOLv2 | dose | 31 / 66 / 83 | 31.0 / 66.0 / 83.0% | 6.5 / 18.2 / 28.9% | +0.790 / +1.407 / +0.723 |
+| LOLv2 | static | 26 / 47 / 84 | 26.0 / 47.0 / 84.0% | 0.0 / 8.5 / 15.5% | +0.407 / +0.724 / +1.199 |
 
 ## Scope, and what is deliberately not claimed
 
-- **Fixed dose only.** Every row here uses the fixed dose 0.45. The dose choices swept in
-  Table III (one dose per image, selected from the probe) are a layer on top and are not
-  part of this package, so the counts here are not the counts of Table III.
+- **Cross-domain rows of Table III only.** The dose rows for LOLv1 and LSRW reproduce the
+  cross-domain block of Table III exactly: fixed dose 0.45, `tau` calibrated on the 100 LOLv2
+  images, `g_min = 1e-4`, so 67/117/165 accepted on LOLv1 and 12/24/40 on LSRW with the
+  harm rates and gains printed there. The three 40/60 split rows recalibrate on their own
+  forty images (seeds 2026, 7, 11) and the two self-referential rows use an anchor taken
+  from the image; neither block is included here.
 - **One calibration pool.** `tau` is always calibrated on LOLv2 and applied to every domain;
   the in-domain calibration rows of the paper are not reproduced here.
 - **Decisions, not restorations.** Nothing here regenerates an image or a PSNR; `dpsnr` is
