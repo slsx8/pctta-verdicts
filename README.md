@@ -73,7 +73,7 @@ Sec. V (LOLv1, dose arm, alpha = 0.10): **67 of 200 accepted, 33.5% coverage, 0.
   cross-domain block of Table III exactly: fixed dose 0.45, `tau` calibrated on the 100 LOLv2
   images, `g_min = 1e-4`, so 67/117/165 accepted on LOLv1 and 12/24/40 on LSRW with the
   harm rates and gains printed there. The three 40/60 split rows recalibrate on their own
-  forty images (seeds 2026, 7, 11) and the two self-referential rows use an anchor taken
+  forty images (seeds 2026, 7, 11) and the three self-referential rows use an anchor taken
   from the image; neither block is included here.
 - **One calibration pool.** `tau` is always calibrated on LOLv2 and applied to every domain;
   the in-domain calibration rows of the paper are not reproduced here.
